@@ -76,10 +76,10 @@ const lineHeight = computed(() => height + 'px')
 .if-skeleton:not(:last-of-type) {
   margin-bottom: 10px;
 }
-.if-skeleton:first-child {
+.if-skeleton:first-of-type {
   width: 30% !important;
 }
-.if-skeleton:last-child {
+.if-skeleton:last-of-type {
   width: 70% !important;
 }
 .shan {
