@@ -1,19 +1,16 @@
-import { onScopeDispose } from 'vue'
-import { unref, watch, type MaybeRef } from 'vue'
-
+import { watch, unref, type MaybeRef, onScopeDispose } from 'vue'
 export const useEventListener = (
   ele: MaybeRef<HTMLElement | null>,
   type: string,
   callback: EventListener,
   options?: AddEventListenerOptions,
 ) => {
-  let rmEvent = () => {}
   // 首页触发 watch => unref(ele) 的值是 null => 获取到元素（onMounted）
   // 最后触发 watch => unref(ele) 的值是 DOM 元素 => null
+  let rmEvent = () => {}
   const unWatch = watch(
     () => unref(ele),
     (el) => {
-      console.log('watch')
       rmEvent()
       if (!el) return
       el?.addEventListener(type, callback, options || false)
@@ -21,7 +18,6 @@ export const useEventListener = (
     },
   )
   onScopeDispose(() => {
-    console.log(1)
     rmEvent()
   })
   return () => {

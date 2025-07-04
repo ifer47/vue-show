@@ -1,31 +1,24 @@
 <template>
-  <div class="box" ref="box" v-if="visibile"></div>
-  <button @click="removeBoxEvent">解绑</button>
-  <button @click="visibile = !visibile">显示隐藏</button>
+  <button ref="btn">click</button>
+  <button @click="clearEffect">清理副作用</button>
 </template>
 
 <script setup lang="ts">
-import { ref, useTemplateRef } from 'vue'
-import { useTest } from './hooks/useTest'
+import { effectScope, useTemplateRef } from 'vue'
+import { useEventListener } from './hooks/useEventListener'
+const oBtn = useTemplateRef('btn')
 
-const visibile = ref(true)
-
-const oBox = useTemplateRef('box')
-const move = (e: Event) => {
-  const mouseEvent = e as MouseEvent
-  console.log(mouseEvent.clientX, mouseEvent.clientY)
+const handleClick = () => {
+  console.log('金山训练营')
 }
-const rmEvent = useTest(oBox, 'click', move)
 
-const removeBoxEvent = () => {
-  rmEvent()
+const scope = effectScope()
+scope.run(() => {
+  useEventListener(oBtn, 'click', handleClick)
+})
+
+const clearEffect = () => {
+  // 停止 scope 作用域内所有的 effect，一旦停止，会触发作用域内的 onScopeDispose 回调
+  scope.stop()
 }
 </script>
-
-<style scoped>
-.box {
-  width: 300px;
-  height: 300px;
-  background-color: teal;
-}
-</style>
