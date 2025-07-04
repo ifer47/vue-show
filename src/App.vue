@@ -1,29 +1,31 @@
+<template>
+  <div class="box" ref="box" v-if="visibile"></div>
+  <button @click="removeBoxEvent">解绑</button>
+  <button @click="visibile = !visibile">显示隐藏</button>
+</template>
+
 <script setup lang="ts">
-import { ref } from 'vue'
-import type { IfInputInstance } from './components/if-input/index.vue'
+import { ref, useTemplateRef } from 'vue'
+import { useTest } from './hooks/useTest'
 
-const inputValue = ref('')
-const onClear = () => {
-  console.log('clear')
+const visibile = ref(true)
+
+const oBox = useTemplateRef('box')
+const move = (e: Event) => {
+  const mouseEvent = e as MouseEvent
+  console.log(mouseEvent.clientX, mouseEvent.clientY)
 }
+const rmEvent = useTest(oBox, 'click', move)
 
-const ifInput = ref<IfInputInstance>()
+const removeBoxEvent = () => {
+  rmEvent()
+}
 </script>
 
-<template>
-  <IfInput
-    :style="{ width: '300px' }"
-    ref="ifInput"
-    v-model="inputValue"
-    clearable
-    @clear="onClear"
-    shadow
-  >
-    <template #title>
-      <h2>训练营</h2>
-    </template>
-    <template #append>
-      <el-button>梦想金山</el-button>
-    </template>
-  </IfInput>
-</template>
+<style scoped>
+.box {
+  width: 300px;
+  height: 300px;
+  background-color: teal;
+}
+</style>
