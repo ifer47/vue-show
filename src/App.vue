@@ -1,24 +1,12 @@
 <template>
-  <button ref="btn">click</button>
-  <button @click="clearEffect">清理副作用</button>
+  <!-- 这儿使用了 Suspense，所以在子组件加载完成之前，也就是从服务端拿到数据之前，都不会去渲染子组件（相当于“暂停”渲染子组件） -->
+  <!-- 而是去渲染 #fallback 插槽中的 loading，等到从服务端拿到数据之后异步子组件才算是加载完成了，此时才会第一次去渲染子组件，并且将 loading 替换为子组件 -->
+  <Suspense>
+    <AsyncUser />
+    <template #fallback>loading...</template>
+  </Suspense>
 </template>
 
 <script setup lang="ts">
-import { effectScope, useTemplateRef } from 'vue'
-import { useEventListener } from './hooks/useEventListener'
-const oBtn = useTemplateRef('btn')
-
-const handleClick = () => {
-  console.log('金山训练营')
-}
-
-const scope = effectScope()
-scope.run(() => {
-  useEventListener(oBtn, 'click', handleClick)
-})
-
-const clearEffect = () => {
-  // 停止 scope 作用域内所有的 effect，一旦停止，会触发作用域内的 onScopeDispose 回调
-  scope.stop()
-}
+import AsyncUser from './components/user/index.vue'
 </script>
