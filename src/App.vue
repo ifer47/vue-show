@@ -1,12 +1,32 @@
 <template>
-  <!-- 这儿使用了 Suspense，所以在子组件加载完成之前，也就是从服务端拿到数据之前，都不会去渲染子组件（相当于“暂停”渲染子组件） -->
-  <!-- 而是去渲染 #fallback 插槽中的 loading，等到从服务端拿到数据之后异步子组件才算是加载完成了，此时才会第一次去渲染子组件，并且将 loading 替换为子组件 -->
-  <Suspense>
-    <AsyncUser />
-    <template #fallback>loading...</template>
-  </Suspense>
+  <div>count: {{ count }}</div>
+  <button @click="count++">increment</button>
+  <button @click="stop">stop</button>
 </template>
 
 <script setup lang="ts">
-import AsyncUser from './components/user/index.vue'
+import { effectScope, getCurrentScope, watch, watchEffect, ref, onScopeDispose } from 'vue'
+
+const scope = effectScope()
+const allScope = getCurrentScope()
+const count = ref(0)
+scope.run(() => {
+  watch(count, () => {
+    console.log('watch', count.value)
+  })
+  watchEffect(() => {
+    console.log('watchEffect', count.value)
+  })
+  onScopeDispose(() => {
+    console.log('onScopeDispose2')
+  })
+})
+onScopeDispose(() => {
+  console.log('onScopeDispose1')
+})
+const stop = () => {
+  // 处理掉当前作用域内所有的 effect
+  scope?.stop()
+  // allScope?.stop()
+}
 </script>
